@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>PeerChat</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <script src="https://kit.fontawesome.com/9e9330d728.js" crossorigin="anonymous"></script>
+    <link rel='stylesheet' type='text/css' media='screen' href='styles.css'>
+</head>
+<body>
+
+    <div id="videos">
+        <video class="video-player" id="user-1" autoplay playsinline></video>
+        <video class="video-player" id="user-2" autoplay playsinline></video>
+    </div>
+
+    <div id="controls">
+
+        <div class="control-container" id="camera-btn">
+            <!-- <img src="icons/camera.png" /> -->
+            <i id="camera" class="fa-solid fa-video fa-xl"  aria-hidden="true" style="color: #fffefa;"></i>
+        </div>
+
+        <div class="control-container" id="mic-btn">
+            <img id="mic" src="icons/mic.png" />
+            <!-- <i id="mic" class="fa-solid fa-microphone-lines fa-xl"  aria-hidden="true" style="color: #fffefa;"></i> -->
+        </div>
+
+        <a href="lobby.html">
+            <div class="control-container" id="leave-btn">
+                <img src="icons/phone.png" />
+                               </div>
+        </a>
+
+    </div>
+    
+</body>
+<script src='agora-rtm-sdk-1.4.4.js'></script>
+<script src='script.js'></script>
+</html>
