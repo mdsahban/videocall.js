@@ -170,19 +170,28 @@ let toggleCamera = async () => {
     }
 }
 
-let toggleMic = async () => {
-    let audioTrack = localStream.getTracks().find(track => track.kind === 'audio')
+const toggleMic = () => {
+    if (localStream) {
+        const audioTrack = localStream.getTracks().find(track => track.kind === 'audio');
 
-    if(audioTrack.enabled){
-        audioTrack.enabled = false
-        document.getElementById('mic-btn').style.backgroundColor = 'rgb(255, 80, 80)'
-        document.getElementById('mic').src = "icons/mute-mic.png"
-    }else{
-        audioTrack.enabled = true
-        document.getElementById('mic-btn').style.backgroundColor = 'rgb(179, 102, 249, .9)'
-        document.getElementById('mic').src = "icons/mic.png"
+        if (audioTrack) {
+            if (audioTrack.enabled) {
+                audioTrack.enabled = false;
+                document.getElementById('mic-btn').style.backgroundColor = 'rgb(255, 80, 80)';
+                document.getElementById('mic').src = 'icons/mute-mic.png';
+            } else {
+                audioTrack.enabled = true;
+                document.getElementById('mic-btn').style.backgroundColor = 'rgb(179, 102, 249, .9)';
+                document.getElementById('mic').src = 'icons/mic.png';
+            }
+        } else {
+            console.error('No audio track found in localStream');
+        }
+    } else {
+        console.error('No localStream available');
     }
-}
+};
+
 
 let newX = 0, newY = 0, startX = 0, startY = 0;
 
