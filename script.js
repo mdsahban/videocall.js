@@ -114,15 +114,13 @@ let createPeerConnection = async (MemberId) => {
         })
     }
 
-   peerConnection.onicecandidate = async (event) => {
-        if (event.candidate) {
-            client.sendMessageToPeer({
-                text: JSON.stringify({ 'type': 'candidate', 'candidate': event.candidate })
-            }, MemberId);
+  
+    peerConnection.onicecandidate = async (event) => {
+        if(event.candidate){
+            client.sendMessageToPeer({text:JSON.stringify({'type':'candidate', 'candidate':event.candidate})}, MemberId)
         }
-    };
-};
-
+    }
+}
 let createOffer = async (MemberId) => {
     await createPeerConnection(MemberId)
 
@@ -146,18 +144,10 @@ let createAnswer = async (MemberId, offer) => {
 
 
 let addAnswer = async (answer) => {
-    if (!peerConnection.currentRemoteDescription) {
-        await peerConnection.setRemoteDescription(answer);
-
-        // Process any ICE candidates that were received before the remote description was set
-        iceCandidateQueue.forEach(async candidate => {
-            await peerConnection.addIceCandidate(candidate);
-        });
-
-        // Clear the queue after processing
-        iceCandidateQueue = [];
+    if(!peerConnection.currentRemoteDescription){
+        peerConnection.setRemoteDescription(answer)
     }
-};
+}
 
 
 let leaveChannel = async () => {
