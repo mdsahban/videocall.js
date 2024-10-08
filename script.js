@@ -144,11 +144,18 @@ let createAnswer = async (MemberId, offer) => {
 
 
 let addAnswer = async (answer) => {
-    if(!peerConnection.currentRemoteDescription){
-        peerConnection.setRemoteDescription(answer)
-    }
-}
+    if (!peerConnection.currentRemoteDescription) {
+        await peerConnection.setRemoteDescription(answer);
 
+        // Process any ICE candidates that were received before the remote description was set
+        iceCandidateQueue.forEach(async candidate => {
+            await peerConnection.addIceCandidate(candidate);
+        });
+
+        // Clear the queue after processing
+        iceCandidateQueue = [];
+    }
+};
 
 let leaveChannel = async () => {
     await channel.leave()
