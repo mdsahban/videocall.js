@@ -62,26 +62,25 @@ let handleUserLeft = (MemberId) => {
 }
 
 let handleMessageFromPeer = async (message, MemberId) => {
-    message = JSON.parse(message.text);
 
-    if (message.type === 'offer') {
-        await createAnswer(MemberId, message.offer);
+    message = JSON.parse(message.text)
+
+    if(message.type === 'offer'){
+        createAnswer(MemberId, message.offer)
     }
 
-    if (message.type === 'answer') {
-        await addAnswer(message.answer);
+    if(message.type === 'answer'){
+        addAnswer(message.answer)
     }
 
-    if (message.type === 'candidate') {
-        // If the peerConnection exists and the remote description is set, add the candidate immediately
-        if (peerConnection && peerConnection.remoteDescription) {
-            await peerConnection.addIceCandidate(message.candidate);
-        } else {
-            // Otherwise, queue the ICE candidate to be added later
-            iceCandidateQueue.push(message.candidate);
+    if(message.type === 'candidate'){
+        if(peerConnection){
+            peerConnection.addIceCandidate(message.candidate)
         }
     }
-};
+
+
+}
 
 
 let handleUserJoined = async (MemberId) => {
