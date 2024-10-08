@@ -178,31 +178,19 @@ let toggleCamera = async () => {
     }
 }
 
-let toggleMic = () => {
-    // Check if localStream is available
-    if (localStream) {
-        // Try to get the audio track from localStream
-        let audioTrack = localStream.getTracks().find(track => track.kind === 'audio');
+let toggleMic = async () => {
+    let audioTrack = localStream.getTracks().find(track => track.kind === 'audio')
 
-        // Check if the audio track exists
-        if (audioTrack) {
-            // Toggle the audio track enabled state
-            if (audioTrack.enabled) {
-                audioTrack.enabled = false;
-                document.getElementById('mic-btn').style.backgroundColor = 'rgb(255, 80, 80)';
-                document.getElementById('mic').src = "icons/mute-mic.png"; // Mute icon
-            } else {
-                audioTrack.enabled = true;
-                document.getElementById('mic-btn').style.backgroundColor = 'rgb(179, 102, 249, .9)';
-                document.getElementById('mic').src = "icons/mic.png"; // Unmute icon
-            }
-        } else {
-            console.error("No audio track found in localStream.");
-        }
-    } else {
-        console.error("localStream is not initialized.");
-    }
-};
+   if (audioTrack.enabled) {
+      audioTrack.enabled = false;
+      document.getElementById('mic-btn').style.backgroundColor = 'rgb(255, 80, 80)';
+      document.getElementById('mic').src = 'icons/mute-mic.png';
+  } else {
+      audioTrack.enabled = true;
+      document.getElementById('mic-btn').style.backgroundColor = 'rgb(179, 102, 249, .9)';
+      document.getElementById('mic').src = 'icons/mic.png';
+  }
+}
 
 
 
