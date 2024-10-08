@@ -20,6 +20,7 @@ let remoteStream;
 let peerConnection;
 
 
+
 const servers = {
     iceServers:[
         {
@@ -82,7 +83,6 @@ let handleMessageFromPeer = async (message, MemberId) => {
 
 }
 
-
 let handleUserJoined = async (MemberId) => {
     console.log('A new user joined the channel:', MemberId)
     createOffer(MemberId)
@@ -114,13 +114,13 @@ let createPeerConnection = async (MemberId) => {
         })
     }
 
-  
     peerConnection.onicecandidate = async (event) => {
         if(event.candidate){
             client.sendMessageToPeer({text:JSON.stringify({'type':'candidate', 'candidate':event.candidate})}, MemberId)
         }
     }
 }
+
 let createOffer = async (MemberId) => {
     await createPeerConnection(MemberId)
 
@@ -144,18 +144,11 @@ let createAnswer = async (MemberId, offer) => {
 
 
 let addAnswer = async (answer) => {
-    if (!peerConnection.currentRemoteDescription) {
-        await peerConnection.setRemoteDescription(answer);
-
-        // Process any ICE candidates that were received before the remote description was set
-        iceCandidateQueue.forEach(async candidate => {
-            await peerConnection.addIceCandidate(candidate);
-        });
-
-        // Clear the queue after processing
-        iceCandidateQueue = [];
+    if(!peerConnection.currentRemoteDescription){
+        peerConnection.setRemoteDescription(answer)
     }
-};
+}
+
 
 let leaveChannel = async () => {
     await channel.leave()
@@ -178,10 +171,9 @@ let toggleCamera = async () => {
     }
 }
 
-let toggleMic = async () => {
-    let audioTrack = localStream.getTracks().find(track => track.kind === 'audio')
-
-   if (audioTrack.enabled) {
+let toggleMic = () => {
+  let audioTrack = localStream.getTracks().find(track => track.kind === 'audio');
+  if (audioTrack.enabled) {
       audioTrack.enabled = false;
       document.getElementById('mic-btn').style.backgroundColor = 'rgb(255, 80, 80)';
       document.getElementById('mic').src = 'icons/mute-mic.png';
@@ -190,9 +182,7 @@ let toggleMic = async () => {
       document.getElementById('mic-btn').style.backgroundColor = 'rgb(179, 102, 249, .9)';
       document.getElementById('mic').src = 'icons/mic.png';
   }
-}
-
-
+};
 
 let newX = 0, newY = 0, startX = 0, startY = 0;
 
