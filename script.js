@@ -21,6 +21,8 @@ let peerConnection;
 
 
 
+
+
 const servers = {
     iceServers:[
         {
@@ -172,18 +174,88 @@ let toggleCamera = async () => {
 }
 
 let toggleMic = () => {
-  let audioTrack = localStream.getTracks().find(track => track.kind === 'audio')
-    
-  if (audioTrack.enabled) {
-      audioTrack.enabled = false;
-      document.getElementById('mic-btn').style.backgroundColor = 'rgb(255, 80, 80)'
-      document.getElementById('mic').src = 'icons/mute-mic.png'
-  } else {
-      audioTrack.enabled = true;
-      document.getElementById('mic-btn').style.backgroundColor = 'rgb(179, 102, 249, .9)'
-      document.getElementById('mic').src = 'icons/mic.png'
+    let audioTrack = localStream.getTracks().find(track => track.kind === 'audio')
+      
+    if (audioTrack.enabled) {
+        audioTrack.enabled = false;
+        document.getElementById('mic-btn').style.backgroundColor = 'rgb(255, 80, 80)'
+        document.getElementById('mic').src = 'icons/mute-mic.png'
+    } else {
+        audioTrack.enabled = true;
+        document.getElementById('mic-btn').style.backgroundColor = 'rgb(179, 102, 249, .9)'
+        document.getElementById('mic').src = 'icons/mic.png'
+    }
   }
-}
+
+  let screenStream;
+
+  let toggleScreenShare = async () => {
+      if (!screenStream) {
+          try {
+              // Request screen sharing stream
+              screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+  
+              // Replace the local video track with the screen sharing track
+              let screenTrack = screenStream.getVideoTracks()[0];
+              let videoSender = peerConnection.getSenders().find(sender => sender.track.kind === 'video');
+  
+              if (videoSender) {
+                  videoSender.replaceTrack(screenTrack); // Replace the camera video track with screen share
+              }
+
+
+  
+              // Update the local video element to show the screen sharing video
+              document.getElementById('user-1').srcObject = screenStream;
+
+              document.getElementById('camera-btn').style.display ='none'
+              document.getElementById('screen-share').style.color = '#000000'
+              document.getElementById('screen-share-btn').style.backgroundColor = 'rgb(255, 80, 80)'
+
+
+
+
+  
+              // When the user stops screen sharing
+              screenTrack.onended = () => {
+                  stopScreenShare();
+              };
+          } catch (error) {
+              console.error("Error sharing the screen:", error);
+          }
+      } else {
+          // If screen sharing is active, stop it
+          stopScreenShare();
+      }
+  };
+  
+  let stopScreenShare = () => {
+      if (screenStream) {
+          // Stop all tracks of the screen sharing stream
+          screenStream.getTracks().forEach(track => track.stop());
+  
+          // Replace the screen sharing track with the webcam track
+          let videoTrack = localStream.getVideoTracks()[0];
+          let videoSender = peerConnection.getSenders().find(sender => sender.track.kind === 'video');
+  
+          if (videoSender) {
+              videoSender.replaceTrack(videoTrack); // Switch back to the camera
+          }
+          
+          // Remove the flip transformation when stopping screen share
+          
+          // Revert the video element to show the camera feed again
+          document.getElementById('user-1').srcObject = localStream;
+
+          document.getElementById('camera-btn').style.display ='flex'
+              document.getElementById('screen-share').style.color = '#fffefa'
+              document.getElementById('screen-share-btn').style.backgroundColor = 'rgb(255, 80, 80)'
+
+  
+          screenStream = null; // Reset the screen sharing stream
+      }
+  };
+  
 
 let newX = 0, newY = 0, startX = 0, startY = 0;
 
@@ -261,5 +333,7 @@ window.addEventListener('beforeunload', leaveChannel)
 
 document.getElementById('camera-btn').addEventListener('click', toggleCamera)
 document.getElementById('mic-btn').addEventListener('click', toggleMic)
+document.getElementById('screen-share-btn').addEventListener('click', toggleScreenShare)
+
 
 init()
