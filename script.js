@@ -61,7 +61,7 @@ let handleUserLeft = (MemberId) => {
     document.getElementById('user-2').style.display = 'none'
     document.getElementById('user-1').classList.remove('smallFrame')
 }
- 
+
 let handleMessageFromPeer = async (message, MemberId) => {
 
     message = JSON.parse(message.text)
@@ -101,7 +101,6 @@ let createPeerConnection = async (MemberId) => {
 
     if(!localStream){
         localStream = await navigator.mediaDevices.getUserMedia({video:true, audio:false})
-        console.error("Local stream not initialized yet.");
         document.getElementById('user-1').srcObject = localStream
     }
 
@@ -184,7 +183,6 @@ let toggleMic = () => {
       document.getElementById('mic').src = 'icons/mic.png';
   }
 }
-  
 
 let newX = 0, newY = 0, startX = 0, startY = 0;
 
