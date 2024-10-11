@@ -171,26 +171,18 @@ let toggleCamera = async () => {
     }
 }
 
-let toggleMic = () => {
-    // Get the audio track from the local stream
-    let audioTrack = localStream ? localStream.getTracks().find(track => track.kind === 'audio') : null;
+let toggleMic = async () => {
+    let audioTrack = localStream.getTracks().find(track => track.kind === 'audio')
 
-    // Check if the audio track exists
-    if (audioTrack) {
-        if (audioTrack.enabled) {
-            audioTrack.enabled = false;
-            document.getElementById('mic-btn').style.backgroundColor = 'rgb(255, 80, 80)';
-            document.getElementById('mic').src = 'icons/mute-mic.png';
-        } else {
-            audioTrack.enabled = true;
-            document.getElementById('mic-btn').style.backgroundColor = 'rgb(179, 102, 249, .9)';
-            document.getElementById('mic').src = 'icons/mic.png';
-        }
-    } else {
-        console.error("Audio track is not available.");
+    if(audioTrack.enabled){
+        audioTrack.enabled = false
+        document.getElementById('mic-btn').style.backgroundColor = 'rgb(255, 80, 80)'
+    }else{
+        audioTrack.enabled = true
+        document.getElementById('mic-btn').style.backgroundColor = 'rgb(179, 102, 249, .9)'
     }
 }
-
+  
 
 let newX = 0, newY = 0, startX = 0, startY = 0;
 
