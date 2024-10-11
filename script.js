@@ -172,15 +172,16 @@ let toggleCamera = async () => {
 }
 
 let toggleMic = () => {
-  let audioTrack = localStream.getTracks().find(track => track.kind === 'audio');
-  if (audioTrack.enable) {
-      audioTrack.enable = false;
-      document.getElementById('mic-btn').style.backgroundColor = 'rgb(255, 80, 80)';
-      document.getElementById('mic').src = 'icons/mute-mic.png';
+  let audioTrack = localStream.getTracks().find(track => track.kind === 'audio')
+    
+  if (audioTrack.enabled) {
+      audioTrack.enabled = false;
+      document.getElementById('mic-btn').style.backgroundColor = 'rgb(255, 80, 80)'
+      document.getElementById('mic').src = 'icons/mute-mic.png'
   } else {
-      audioTrack.enable = true;
-      document.getElementById('mic-btn').style.backgroundColor = 'rgb(179, 102, 249, .9)';
-      document.getElementById('mic').src = 'icons/mic.png';
+      audioTrack.enabled = true;
+      document.getElementById('mic-btn').style.backgroundColor = 'rgb(179, 102, 249, .9)'
+      document.getElementById('mic').src = 'icons/mic.png'
   }
 }
 
