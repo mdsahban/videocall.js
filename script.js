@@ -100,7 +100,8 @@ let createPeerConnection = async (MemberId) => {
 
 
     if(!localStream){
-        localStream = await navigator.mediaDevices.getUserMedia({video:true, audio:true})
+        localStream = await navigator.mediaDevices.getUserMedia({video:true, audio:false})
+        console.error("Local stream not initialized yet.");
         document.getElementById('user-1').srcObject = localStream
     }
 
