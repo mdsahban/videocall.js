@@ -100,7 +100,7 @@ img{
 } */
 
 #leave-btn{
-  background-color: rgb(255,80,80, 1);
+  background-color: #ec0000;
 }
 
 @media screen and (max-width:600px) {
@@ -112,5 +112,8 @@ img{
       .control-container img{
           height: 20px;
           width: 20px;
+      }
+  #controls{
+        gap: 1.5em;
       }
 }
