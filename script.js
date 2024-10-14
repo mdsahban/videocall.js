@@ -1,6 +1,5 @@
 let APP_ID = "8be5ff5ab1e84f9e8e9e9cb18ee1fb4c"
 
-
 let token = null;
 let uid = String(Math.floor(Math.random() * 10000))
 
@@ -11,7 +10,7 @@ let queryString = window.location.search
 let urlParams = new URLSearchParams(queryString)
 let roomId = urlParams.get('room')
 
-if(!roomId){
+if (!roomId) {
     window.location = 'lobby.html'
 }
 
@@ -19,77 +18,81 @@ let localStream;
 let remoteStream;
 let peerConnection;
 
+let screenStream = null;
 
-
-
+let videos = document.getElementsByClassName('video-player');
+for (let i = 0; i < videos.length; i++) {
+    videos[i].style.transform = 'scaleX(-1)';
+}
 
 const servers = {
-    iceServers:[
-        {
-            urls:['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302']
-        }
+    iceServers: [
+        { urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }
     ]
 }
 
-
 let constraints = {
-    video:{
-        width:{min:640, ideal:1920, max:1920},
-        height:{min:480, ideal:1080, max:1080},
-      
+    video: {
+        width: { min: 640, ideal: 1920, max: 1920 },
+        height: { min: 480, ideal: 1080, max: 1080 },
     },
-    audio:true
-
+    audio: true
 }
 
 let init = async () => {
-    client = await AgoraRTM.createInstance(APP_ID)
-    await client.login({uid, token})
+    try {
+        client = await AgoraRTM.createInstance(APP_ID)
+        await client.login({ uid, token })
 
-    channel = client.createChannel(roomId)
-    await channel.join()
+        channel = client.createChannel(roomId)
+        await channel.join()
 
-    channel.on('MemberJoined', handleUserJoined)
-    channel.on('MemberLeft', handleUserLeft)
+        channel.on('MemberJoined', handleUserJoined)
+        channel.on('MemberLeft', handleUserLeft)
+        channel.on('ChannelMessage', handleChannelMessage)
+        
+        addBotMessageToDom(`Welcome to the room User 👋`)
 
-    client.on('MessageFromPeer', handleMessageFromPeer)
+        client.on('MessageFromPeer', handleMessageFromPeer)
 
-    localStream = await navigator.mediaDevices.getUserMedia(constraints)
-    document.getElementById('user-1').srcObject = localStream
+        localStream = await navigator.mediaDevices.getUserMedia(constraints)
+        document.getElementById('user-1').srcObject = localStream
+    } catch (error) {
+        console.error("Error during Agora initialization:", error);
+    }
 }
- 
 
 let handleUserLeft = (MemberId) => {
     document.getElementById('user-2').style.display = 'none'
     document.getElementById('user-1').classList.remove('smallFrame')
+    addBotMessageToDom(`User has left the room 👋`)
+
 }
 
 let handleMessageFromPeer = async (message, MemberId) => {
-
     message = JSON.parse(message.text)
 
-    if(message.type === 'offer'){
+    if (message.type === 'offer') {
         createAnswer(MemberId, message.offer)
     }
 
-    if(message.type === 'answer'){
+    if (message.type === 'answer') {
         addAnswer(message.answer)
     }
 
-    if(message.type === 'candidate'){
-        if(peerConnection){
+    if (message.type === 'candidate') {
+        if (peerConnection) {
             peerConnection.addIceCandidate(message.candidate)
         }
     }
-
-
 }
 
 let handleUserJoined = async (MemberId) => {
     console.log('A new user joined the channel:', MemberId)
     createOffer(MemberId)
-}
+    addBotMessageToDom(`Welcome to the room User 👋`)
 
+}
 
 let createPeerConnection = async (MemberId) => {
     peerConnection = new RTCPeerConnection(servers)
@@ -97,28 +100,26 @@ let createPeerConnection = async (MemberId) => {
     remoteStream = new MediaStream()
     document.getElementById('user-2').srcObject = remoteStream
     document.getElementById('user-2').style.display = 'block'
-
     document.getElementById('user-1').classList.add('smallFrame')
 
-
-    if(!localStream){
-        localStream = await navigator.mediaDevices.getUserMedia({video:true, audio:false})
+    if (!localStream) {
+        localStream = await navigator.mediaDevices.getUserMedia(constraints)
         document.getElementById('user-1').srcObject = localStream
     }
 
-    localStream.getTracks().forEach((track) => {
+    localStream.getTracks().forEach(track => {
         peerConnection.addTrack(track, localStream)
     })
 
     peerConnection.ontrack = (event) => {
-        event.streams[0].getTracks().forEach((track) => {
+        event.streams[0].getTracks().forEach(track => {
             remoteStream.addTrack(track)
         })
     }
 
     peerConnection.onicecandidate = async (event) => {
-        if(event.candidate){
-            client.sendMessageToPeer({text:JSON.stringify({'type':'candidate', 'candidate':event.candidate})}, MemberId)
+        if (event.candidate) {
+            client.sendMessageToPeer({ text: JSON.stringify({ 'type': 'candidate', 'candidate': event.candidate }) }, MemberId)
         }
     }
 }
@@ -129,9 +130,8 @@ let createOffer = async (MemberId) => {
     let offer = await peerConnection.createOffer()
     await peerConnection.setLocalDescription(offer)
 
-    client.sendMessageToPeer({text:JSON.stringify({'type':'offer', 'offer':offer})}, MemberId)
+    client.sendMessageToPeer({ text: JSON.stringify({ 'type': 'offer', 'offer': offer }) }, MemberId)
 }
-
 
 let createAnswer = async (MemberId, offer) => {
     await createPeerConnection(MemberId)
@@ -141,121 +141,170 @@ let createAnswer = async (MemberId, offer) => {
     let answer = await peerConnection.createAnswer()
     await peerConnection.setLocalDescription(answer)
 
-    client.sendMessageToPeer({text:JSON.stringify({'type':'answer', 'answer':answer})}, MemberId)
+    client.sendMessageToPeer({ text: JSON.stringify({ 'type': 'answer', 'answer': answer }) }, MemberId)
 }
 
 
 let addAnswer = async (answer) => {
-    if(!peerConnection.currentRemoteDescription){
+    if (!peerConnection.currentRemoteDescription) {
         peerConnection.setRemoteDescription(answer)
     }
 }
+
+let handleChannelMessage = async (messageData) => {
+    console.log('A new message was received')
+    let data = JSON.parse(messageData.text)
+    console.log('Message:', data);
+
+    if (data.type === 'chat') {
+        addMessageToDom(data.message)
+    }
+    
+
+}
+
+let sendMessage = async (e) => {
+    e.preventDefault()
+
+    let message = e.target.message.value
+    channel.sendMessage({text:JSON.stringify({'type':'chat', 'message':message})})
+    addMessageToDom(message)
+    e.target.reset()
+}
+
+let addMessageToDom = (message) => {
+    let messagesWrapper = document.getElementById('messages')
+
+    let newMessage = `<div class="message__wrapper">
+                        <div class="message__body">
+                            <strong class="message__author">user</strong>
+                            <p class="message__text">${message}</p>
+                        </div>
+                    </div>`
+
+    messagesWrapper.insertAdjacentHTML('beforeend', newMessage)
+
+    let lastMessage = document.querySelector('#messages .message__wrapper:last-child')
+    if(lastMessage){
+        lastMessage.scrollIntoView()
+    }
+}
+
+let addBotMessageToDom = (botMessage) => {
+    let messagesWrapper = document.getElementById('messages')
+
+    let newMessage = `<div class="message__wrapper">
+                <div class="message__body__bot">
+                    <strong class="message__author__bot">🤖 Bot</strong>
+                    <p class="message__text__bot">${botMessage}</p>
+                </div>
+            </div>`
+
+    messagesWrapper.insertAdjacentHTML('beforeend', newMessage)
+
+    let lastMessage = document.querySelector('#messages .message__wrapper:last-child')
+    if(lastMessage){
+        lastMessage.scrollIntoView()
+    }
+}
+
 
 
 let leaveChannel = async () => {
     await channel.leave()
     await client.logout()
+    if (peerConnection) {
+        peerConnection.close();
+    }
 }
 
 let toggleCamera = async () => {
     let videoTrack = localStream.getTracks().find(track => track.kind === 'video')
 
-    if(videoTrack.enabled){
+    if (videoTrack.enabled) {
         videoTrack.enabled = false
         document.getElementById('camera-btn').style.backgroundColor = 'rgb(255, 80, 80)'
         document.getElementById('camera').style.color = '#000000'
-        document.getElementById('camera').className ="fa-solid fa-video-slash fa-xl"
-    }else{
+        document.getElementById('camera').className = "fa-solid fa-video-slash fa-xl"
+    } else {
         videoTrack.enabled = true
-        document.getElementById('camera-btn').style.backgroundColor = 'rgb(179, 102, 249, .9)'
+        document.getElementById('camera-btn').style.backgroundColor = '#36393e'
         document.getElementById('camera').style.color = '#fffefa'
-        document.getElementById('camera').className ="fa-solid fa-video fa-xl"
+        document.getElementById('camera').className = "fa-solid fa-video fa-xl"
     }
 }
 
 let toggleMic = () => {
     let audioTrack = localStream.getTracks().find(track => track.kind === 'audio')
-      
+
     if (audioTrack.enabled) {
         audioTrack.enabled = false;
         document.getElementById('mic-btn').style.backgroundColor = 'rgb(255, 80, 80)'
         document.getElementById('mic').src = 'icons/mute-mic.png'
     } else {
         audioTrack.enabled = true;
-        document.getElementById('mic-btn').style.backgroundColor = 'rgb(179, 102, 249, .9)'
+        document.getElementById('mic-btn').style.backgroundColor = '#36393e'
         document.getElementById('mic').src = 'icons/mic.png'
     }
-  }
+}
 
-  let screenStream;
+let toggleScreenShare = async () => {
+    if (!screenStream) {
+        try {
+            screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
 
-  let toggleScreenShare = async () => {
-      if (!screenStream) {
-          try {
-              // Request screen sharing stream
-              screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-  
-              // Replace the local video track with the screen sharing track
-              let screenTrack = screenStream.getVideoTracks()[0];
-              let videoSender = peerConnection.getSenders().find(sender => sender.track.kind === 'video');
-  
-              if (videoSender) {
-                  videoSender.replaceTrack(screenTrack); // Replace the camera video track with screen share
-              }
+            let screenTrack = screenStream.getVideoTracks()[0];
+            let videoSender = peerConnection.getSenders().find(sender => sender.track.kind === 'video');
 
+            if (videoSender) {
+                videoSender.replaceTrack(screenTrack); 
+            }
 
-  
-              // Update the local video element to show the screen sharing video
-              document.getElementById('user-1').srcObject = screenStream;
+            document.getElementById('user-1').srcObject = screenStream;
+            document.getElementById('camera-btn').style.display = 'none'
+            document.getElementById('screen-share').style.color = '#000000'
+            document.getElementById('screen-share-btn').style.backgroundColor = 'rgb(255, 80, 80)'
 
-              document.getElementById('camera-btn').style.display ='none'
-              document.getElementById('screen-share').style.color = '#000000'
-              document.getElementById('screen-share-btn').style.backgroundColor = 'rgb(255, 80, 80)'
+            let videos = document.getElementsByClassName('video-player');
+            for (let i = 0; i < videos.length; i++) {
+                videos[i].style.transform = 'scaleX(1)';
+            }
 
+            screenTrack.onended = () => {
+                stopScreenShare();
+            };
+        } catch (error) {
+            console.error("Error sharing the screen:", error);
+        }
+    } else {
+        stopScreenShare();
+    }
+}
 
+let stopScreenShare = () => {
+    if (screenStream) {
+        screenStream.getTracks().forEach(track => track.stop());
 
+        let videoTrack = localStream.getVideoTracks()[0];
+        let videoSender = peerConnection.getSenders().find(sender => sender.track.kind === 'video');
 
-  
-              // When the user stops screen sharing
-              screenTrack.onended = () => {
-                  stopScreenShare();
-              };
-          } catch (error) {
-              console.error("Error sharing the screen:", error);
-          }
-      } else {
-          // If screen sharing is active, stop it
-          stopScreenShare();
-      }
-  };
-  
-  let stopScreenShare = () => {
-      if (screenStream) {
-          // Stop all tracks of the screen sharing stream
-          screenStream.getTracks().forEach(track => track.stop());
-  
-          // Replace the screen sharing track with the webcam track
-          let videoTrack = localStream.getVideoTracks()[0];
-          let videoSender = peerConnection.getSenders().find(sender => sender.track.kind === 'video');
-  
-          if (videoSender) {
-              videoSender.replaceTrack(videoTrack); // Switch back to the camera
-          }
-          
-          // Remove the flip transformation when stopping screen share
-          
-          // Revert the video element to show the camera feed again
-          document.getElementById('user-1').srcObject = localStream;
+        if (videoSender) {
+            videoSender.replaceTrack(videoTrack);
+        }
 
-          document.getElementById('camera-btn').style.display ='flex'
-              document.getElementById('screen-share').style.color = '#fffefa'
-              document.getElementById('screen-share-btn').style.backgroundColor = 'rgb(255, 80, 80)'
+        document.getElementById('user-1').srcObject = localStream;
+        document.getElementById('camera-btn').style.display = 'flex'
+        document.getElementById('screen-share').style.color = '#fffefa'
+        document.getElementById('screen-share-btn').style.backgroundColor = '#36393e'
 
-  
-          screenStream = null; // Reset the screen sharing stream
-      }
-  };
-  
+        screenStream = null;
+    }
+
+    let videos = document.getElementsByClassName('video-player');
+    for (let i = 0; i < videos.length; i++) {
+        videos[i].style.transform = 'scaleX(-1)';
+    }
+}
 
 let newX = 0, newY = 0, startX = 0, startY = 0;
 
@@ -328,12 +377,34 @@ function mouseUp(e) {
     document.removeEventListener('mouseup', mouseUp);
 }
 
-  
+
+
+
+let toggleChat = () => {
+   let chatBox = document.getElementById('messages__container');
+    if (chatBox.style.display === 'block') {
+        chatBox.style.display = 'none'
+        document.getElementById('message-btn').style.backgroundColor = 'rgb(255, 80, 80)'
+        document.getElementById('message').style.color = '#000000'
+
+        
+    } else {
+        chatBox.style.display = 'block'
+        document.getElementById('message-btn').style.backgroundColor = '#36393e'
+        document.getElementById('message').style.color = '#fffefa'
+
+        
+    }
+}
+
 window.addEventListener('beforeunload', leaveChannel)
+let messageForm = document.getElementById('message__form')
+messageForm.addEventListener('submit', sendMessage)
 
 document.getElementById('camera-btn').addEventListener('click', toggleCamera)
 document.getElementById('mic-btn').addEventListener('click', toggleMic)
 document.getElementById('screen-share-btn').addEventListener('click', toggleScreenShare)
+document.getElementById('message-btn').addEventListener('click', toggleChat)
 
 
 init()
