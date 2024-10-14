@@ -3,7 +3,7 @@
 <head>
     <meta charset='utf-8'>
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <title>PeerChat</title>
+    <title>SahChat</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <script src="https://kit.fontawesome.com/9e9330d728.js" crossorigin="anonymous"></script>
     <link rel='stylesheet' type='text/css' media='screen' href='styles.css'>
@@ -14,6 +14,8 @@
         <video class="video-player" id="user-1" autoplay playsinline></video>
         <video class="video-player" id="user-2" autoplay playsinline></video>
     </div>
+
+    
 
     <div id="controls">
 
@@ -37,7 +39,41 @@
                                </div>
         </a>
 
+        <div class="control-container" id="message-btn">
+            <i id="message" class="fa-solid fa-message fa-xl" aria-hidden="true" style="color: #fffefa;"></i>
+        </div>
+
     </div>
+    <section id="messages__container">
+          
+        <div id="messages">
+            <h2 id="heading">Chats</h2>
+             <div class="message__wrapper">
+                <div class="message__body__bot">
+                    <strong class="message__author__bot">🤖 Mumble Bot</strong>
+                    <p class="message__text__bot">Welcome to the room, Don't be shy, say hello!</p>
+                </div>
+            </div>
+
+            <div class="message__wrapper">
+                <div class="message__body">
+                    <strong class="message__author">Dennis Ivy</strong>
+                    <p class="message__text">Does anyone know hen he will be back?</p>
+                </div>
+            </div> 
+
+      </div>
+
+          
+         
+
+        <form id="message__form"  autocomplete="off">
+            <input type="text" name="message" placeholder="Send a message...." />
+        </form>
+
+    </section>
+
+    
     
 </body>
 <script src='agora-rtm-sdk-1.4.4.js'></script>
