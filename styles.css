@@ -146,7 +146,7 @@ img {
   padding: 5px 0;
   font-size: 2rem;
   border-radius: 10px;
-  position: sticky;
+  /* position: fixed; */
   top: 0;
   font-style: italic;
   font-weight: 1000;
@@ -240,10 +240,12 @@ img {
 
   #messages__container {
     max-width: 20rem;
+    max-height: 36rem;
   }
 
   #message__form {
     width: 20rem;
+    bottom: 10rem;
   }
 
   .message__body__bot {
@@ -258,13 +260,13 @@ img {
 
 @media (max-width: 768px) {
 
-  #messages__container {
+  /* #messages__container {
     max-width: 15rem;
-  }
+  } */
 
-  #message__form {
+  /* #message__form {
     width: 13.2rem;
-  }
+  } */
 
   .message__body__bot {
     padding: 0 0;
@@ -302,8 +304,13 @@ img {
     left: 50%;
   }
 
+  #screen-share-btn{
+    display: none;
+  }
+
   
   #messages__container {
     display: none;
   }
 }
+
