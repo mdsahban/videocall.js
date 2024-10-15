@@ -146,7 +146,7 @@ img {
   padding: 5px 0;
   font-size: 2rem;
   border-radius: 10px;
-  /* position: fixed; */
+  position: sticky;
   top: 0;
   font-style: italic;
   font-weight: 1000;
