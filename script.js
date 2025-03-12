@@ -1,4 +1,4 @@
-let APP_ID = "8be5ff5ab1e84f9e8e9e9cb18ee1fb4c"
+let APP_ID = "Enter Your API Key"
 
 let token = null;
 let uid = String(Math.floor(Math.random() * 10000))
