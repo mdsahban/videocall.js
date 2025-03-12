@@ -1,17 +1,25 @@
+Here’s a `README.md` for the `videocall.js` repository based on general WebRTC video call functionality. Please adjust the details if needed based on more specific features or configurations present in the repo.
 
-# VideoCall
+---
 
-VideoCall.js is a simple library to enable real-time video calling using WebRTC. It's lightweight and easy to integrate into your web projects.
+# VideoCall.js
+
+**VideoCall.js** is a simple and easy-to-use JavaScript library that enables real-time video and audio calls using WebRTC. It's lightweight and provides essential functionality to quickly integrate video calling into web applications.
 
 ## Features
 
-- **Real-time Video and Audio Call**: Built using WebRTC.
-- **Easy Integration**: Plug and play integration with minimal setup.
-- **Cross-Browser Support**: Works on most modern browsers.
+- Real-time video and audio communication using WebRTC
+- Easy integration with web applications
+- Minimalistic and lightweight
+- Cross-browser support
+
+## Demo
+
+You can check out the live demo at [link-to-your-demo-page](#). *(Replace with actual demo link if available)*
 
 ## Installation
 
-To get started with VideoCall.js, you can either download the code directly or use npm to install it.
+You can add VideoCall.js to your project either via npm or by directly downloading the files.
 
 ### Using npm
 
@@ -19,60 +27,75 @@ To get started with VideoCall.js, you can either download the code directly or u
 npm install videocall.js
 ```
 
-### Or Download the Files
+### Using CDN
 
-You can also download the latest version of the library directly from the repository:
+You can also link to the library directly from a CDN.
 
 ```html
-<script src="path/to/videocall.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/videocall.js"></script>
+```
+
+### Manual Installation
+
+Alternatively, you can clone the repository or download the ZIP file.
+
+```bash
+git clone https://github.com/mdsahban/videocall.js.git
 ```
 
 ## Usage
 
-1. Initialize the VideoCall instance in your script:
+To use VideoCall.js in your project, follow these steps:
+
+1. **Import the Library** (either through npm or by linking it in your HTML file):
+
+```javascript
+import VideoCall from 'videocall.js';
+```
+
+or, if you're using the CDN:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/videocall.js"></script>
+```
+
+2. **Initialize the VideoCall Instance**:
 
 ```javascript
 const videoCall = new VideoCall();
 ```
 
-2. To start a call:
+You can also customize the video call interface and configure various options. Check the documentation for more advanced usage.
+
+## Configuration
+
+You can configure the video call by passing options when initializing the `VideoCall` object.
 
 ```javascript
-videoCall.startCall();
+const videoCall = new VideoCall({
+  video: true,   // Enable video
+  audio: true,   // Enable audio
+  width: 1280,   // Video width
+  height: 720,   // Video height
+});
 ```
-
-3. To end the call:
-
-```javascript
-videoCall.endCall();
-```
-
-Make sure to check the full documentation for more advanced configuration options and integration details.
 
 ## Files
 
-- `index.html`: Main HTML file for setting up the video call interface.
-- `styles.css`: The CSS file to style the video call interface.
-- `script.js`: Contains the main logic for starting and ending calls using WebRTC.
-- `lobby.html`: Additional file for the lobby interface before the call starts.
-- `lobby.css`: Styling for the lobby interface.
+- **`index.html`**: Basic example of how to use the video call feature.
+- **`styles.css`**: CSS styles for the video call interface.
+- **`videocall.js`**: Main JavaScript file that handles video call logic using WebRTC.
 
 ## Contributing
 
-We welcome contributions! If you'd like to help improve this project, please fork the repository and submit a pull request.
-
-### Steps to contribute:
+We welcome contributions to this project! If you'd like to contribute, please follow these steps:
 
 1. Fork the repository.
-2. Clone your fork locally.
-3. Create a new branch for your feature or fix.
-4. Commit your changes and push them to your fork.
-5. Open a pull request to the main repository.
+2. Create a new branch for your changes.
+3. Commit your changes and push to your fork.
+4. Create a pull request describing your changes.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
 
----
-
-You can adjust the details based on your project’s specific features or usage instructions.
